@@ -11,12 +11,20 @@ final class Router
      */
     private array $routes = [];
 
+    /** @var callable|null */
+    private $notFoundHandler = null;
+
     public function get(string $path, callable $handler): void
     {
         $this->routes['GET'][] = [
             'path' => $this->normalizePath($path),
             'handler' => $handler,
         ];
+    }
+
+    public function setNotFoundHandler(callable $handler): void
+    {
+        $this->notFoundHandler = $handler;
     }
 
     public function dispatch(string $method, string $path): void
@@ -36,6 +44,12 @@ final class Router
         }
 
         http_response_code(404);
+
+        if ($this->notFoundHandler !== null) {
+            ($this->notFoundHandler)();
+            return;
+        }
+
         echo '404 — страница не найдена';
     }
 

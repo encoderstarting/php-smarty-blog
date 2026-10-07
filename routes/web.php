@@ -36,4 +36,9 @@ return static function (Router $router, View $view): void {
     $router->get('/', [$homeController, 'index']);
     $router->get('/category/{slug}', [$categoryController, 'show']);
     $router->get('/post/{slug}', [$postController, 'show']);
+    $router->setNotFoundHandler(static function () use ($view): void {
+        $view->render('errors/404.tpl', [
+            'pageTitle' => 'Страница не найдена',
+        ]);
+    });
 };
