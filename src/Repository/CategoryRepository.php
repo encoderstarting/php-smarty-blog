@@ -22,8 +22,8 @@ final class CategoryRepository
             SELECT id, name, slug, description    
             FROM categories
             WHERE slug = :slug
-            LIMIT 1
-        ';
+            LIMIT 1';
+
 
         $statement = $this->pdo->prepare($sql);
 
