@@ -2,14 +2,24 @@
 
 declare(strict_types=1);
 
+use App\Controller\HomeController;
+use App\Core\Database;
 use App\Core\Router;
 use App\Core\View;
+use App\Repository\CategoryRepository;
+use App\Repository\PostRepository;
 
 return static function (Router $router, View $view): void {
-    $router->get('/', static function () use ($view): void {
-        $view->render('home.tpl', [
-            'pageTitle' => 'PHP + Smarty Blog',
-        ]);
-    });
-};
+    $pdo = (new Database())->connect();
 
+    $categoryRepository = new CategoryRepository($pdo);
+    $postRepository = new PostRepository($pdo);
+
+    $homeController = new HomeController(
+        $categoryRepository,
+        $postRepository,
+        $view,
+    );
+
+    $router->get('/', [$homeController, 'index']);
+};
