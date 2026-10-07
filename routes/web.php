@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controller\HomeController;
+use App\Controller\CategoryController;
 use App\Core\Database;
 use App\Core\Router;
 use App\Core\View;
@@ -20,6 +21,12 @@ return static function (Router $router, View $view): void {
         $postRepository,
         $view,
     );
+    $categoryController = new CategoryController(
+        $categoryRepository,
+        $postRepository,
+        $view,
+    );
 
     $router->get('/', [$homeController, 'index']);
+    $router->get('/category/{slug}', [$categoryController, 'show']);
 };
