@@ -1,0 +1,12 @@
+{
+    "name": "php-smarty-blog-assets",
+    "private": true,
+    "scripts": {
+        "css:build": "sass resources/scss/app.scss public/assets/css/app.css --style=compressed --no-source-map",
+        "css:watch": "sass resources/scss/app.scss public/assets/css/app.css --watch"
+    },
+    "devDependencies": {
+        "sass": "^1.77.0"
+    }
+}
+
