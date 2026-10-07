@@ -1,2 +1,97 @@
-// TODO: добавить стили карточек статей.
+@use "variables" as *;
 
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.post-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid $border;
+  border-radius: $radius-medium;
+  background: $surface;
+  box-shadow: 0 8px 28px rgba($text, 0.045);
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+
+  &:hover {
+    border-color: rgba($accent, 0.45);
+    box-shadow: $shadow;
+    transform: translateY(-4px);
+  }
+}
+
+.post-card__image-link {
+  display: block;
+  overflow: hidden;
+  background: rgba($text, 0.08);
+}
+
+.post-card__image {
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  object-fit: cover;
+  transition: transform 300ms ease;
+
+  .post-card:hover & {
+    transform: scale(1.025);
+  }
+}
+
+.post-card__body {
+  padding: 22px;
+}
+
+.post-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 14px;
+  margin-bottom: 14px;
+  color: $muted;
+  font-size: 12px;
+}
+
+.post-card__title {
+  margin: 0 0 12px;
+  font-size: 23px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: $accent-dark;
+  }
+}
+
+.post-card__description {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  color: $muted;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+@media (max-width: 900px) {
+  .posts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 580px) {
+  .posts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-card,
+  .post-card__image {
+    transition: none;
+  }
+}

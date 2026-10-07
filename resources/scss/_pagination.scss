@@ -1,2 +1,40 @@
-// TODO: добавить стили пагинации.
+@use "variables" as *;
 
+.pagination {
+  margin-top: 42px;
+}
+
+.pagination__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  a,
+  span {
+    display: grid;
+    min-width: 42px;
+    height: 42px;
+    place-items: center;
+    padding-inline: 12px;
+    border: 1px solid $border;
+    border-radius: $radius-small;
+    background: $surface;
+    text-decoration: none;
+  }
+
+  a:hover {
+    border-color: $accent;
+    color: $accent-dark;
+  }
+
+  span[aria-current="page"] {
+    border-color: $text;
+    background: $text;
+    color: #ffffff;
+    font-weight: 800;
+  }
+}
