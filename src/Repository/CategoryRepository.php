@@ -64,4 +64,30 @@ final class CategoryRepository
 
         return $statement->fetchAll();
     }
+
+    /** @return list<array<string, mixed>> */
+    public function findForPost(int $postId): array
+    {
+        $sql = '
+            SELECT
+                c.id,
+                c.name,
+                c.slug
+            FROM categories AS c
+            INNER JOIN category_post AS cp ON cp.category_id = c.id
+            WHERE cp.post_id = :post_id
+            ORDER BY c.name ASC
+        ';
+
+        $statement = $this->pdo->prepare($sql);
+
+        if ($statement === false) {
+            throw new RuntimeException('Database error');
+        }
+
+        $statement->bindValue(':post_id', $postId, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
 }

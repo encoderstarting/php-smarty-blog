@@ -34,6 +34,7 @@ final class PostRepository
                 published_at
             FROM posts
             WHERE slug = :slug
+              AND published_at <= NOW()
             LIMIT 1
         ';
 
@@ -138,6 +139,93 @@ final class PostRepository
         );
         $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
         $statement->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
+
+    public function incrementViews(int $postId): void
+    {
+        $sql = '
+            UPDATE posts
+            SET views_count = views_count + 1
+            WHERE id = :post_id
+        ';
+
+        $statement = $this->pdo->prepare($sql);
+
+        if ($statement === false) {
+            throw new RuntimeException('Database error');
+        }
+
+        $statement->bindValue(':post_id', $postId, PDO::PARAM_INT);
+        $statement->execute();
+
+        if ($statement->rowCount() !== 1) {
+            throw new RuntimeException('Не удалось увеличить счётчик просмотров.');
+        }
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function findRelated(int $postId, int $limit = 3): array
+    {
+        if ($limit < 1) {
+            throw new InvalidArgumentException(
+                'Количество похожих статей должно быть больше нуля.'
+            );
+        }
+
+        $sql = '
+            SELECT
+                p.id,
+                p.image_path,
+                p.title,
+                p.slug,
+                p.description,
+                p.views_count,
+                p.published_at,
+                COUNT(DISTINCT cp.category_id) AS common_categories
+            FROM posts AS p
+            INNER JOIN category_post AS cp ON cp.post_id = p.id
+            WHERE cp.category_id IN (
+                SELECT current_cp.category_id
+                FROM category_post AS current_cp
+                WHERE current_cp.post_id = :current_post_id
+            )
+              AND p.id <> :excluded_post_id
+              AND p.published_at <= NOW()
+            GROUP BY
+                p.id,
+                p.image_path,
+                p.title,
+                p.slug,
+                p.description,
+                p.views_count,
+                p.published_at
+            ORDER BY
+                common_categories DESC,
+                p.published_at DESC,
+                p.id DESC
+            LIMIT :limit
+        ';
+
+        $statement = $this->pdo->prepare($sql);
+
+        if ($statement === false) {
+            throw new RuntimeException('Database error');
+        }
+
+        $statement->bindValue(
+            ':current_post_id',
+            $postId,
+            PDO::PARAM_INT,
+        );
+        $statement->bindValue(
+            ':excluded_post_id',
+            $postId,
+            PDO::PARAM_INT,
+        );
+        $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
         $statement->execute();
 
         return $statement->fetchAll();
